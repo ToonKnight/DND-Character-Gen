@@ -69,10 +69,29 @@ async function generateFantasyDescription(name, race, charClass) {
 async function generateCharacter(race, charClass, alignment, background) {
   const races = {
     Human: { strength: 1, dexterity: 1, constitution: 1, intelligence: 1, wisdom: 1, charisma: 1 },
-    Elf: { strength: 0, dexterity: 2, constitution: 0, intelligence: 0, wisdom: 0, charisma: 0 },
-    Dwarf: { strength: 0, dexterity: 0, constitution: 2, intelligence: 0, wisdom: 0, charisma: 0 },
-    Halfling: { strength: 0, dexterity: 2, constitution: 0, intelligence: 0, wisdom: 0, charisma: 0 },
-    Orc: { strength: 2, dexterity: 0, constitution: 1, intelligence: -2, wisdom: 0, charisma: 0 },
+    Elf: { dexterity: 2 },
+    Dwarf: { constitution: 2 },
+    Halfling: { dexterity: 2 },
+    Orc: { strength: 2, constitution: 1, intelligence: -2 },
+    Dragonborn: { strength: 2, charisma: 1 },
+    Gnome: { intelligence: 2 },
+    HalfElf: { charisma: 2, two_other_scores: 1 },
+    HalfOrc: { strength: 2, constitution: 1 },
+    Tiefling: { charisma: 2, intelligence: 1 },
+    Aarakocra: { dexterity: 2, wisdom: 1 },
+    Genasi: { constitution: 2, sub_race: { air: { dexterity: 1 }, earth: { strength: 1 }, fire: { intelligence: 1 }, water: { wisdom: 1 } } },
+    Goliath: { strength: 2, constitution: 1 },
+    Aasimar: { charisma: 2 },
+    Bugbear: { strength: 2, dexterity: 1 },
+    Firbolg: { wisdom: 2, strength: 1 },
+    Goblin: { dexterity: 2, constitution: 1 },
+    Hobgoblin: { constitution: 2, intelligence: 1 },
+    Kenku: { dexterity: 2, wisdom: 1 },
+    Kobold: { dexterity: 2, strength: -2 },
+    Lizardfolk: { constitution: 2, wisdom: 1 },
+    Tabaxi: { dexterity: 2, charisma: 1 },
+    Triton: { strength: 1, constitution: 1, charisma: 1 },
+    YuanTi: { charisma: 2, intelligence: 1 }
   };
 
   const skills = {

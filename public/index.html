@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>D&D Character Generator</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <h1>D&D Character Generator</h1>
+  <form id="character-form">
+    <label for="race">Choose a race:</label>
+    <select id="race" name="race">
+      <option value="Human">Human</option>
+      <option value="Elf">Elf</option>
+      <option value="Dwarf">Dwarf</option>
+      <option value="Halfling">Halfling</option>
+      <option value="Orc">Orc</option>
+    </select>
+
+    <label for="class">Choose a class:</label>
+    <select id="class" name="class">
+      <option value="Fighter">Fighter</option>
+      <option value="Wizard">Wizard</option>
+      <option value="Rogue">Rogue</option>
+      <option value="Cleric">Cleric</option>
+      <option value="Bard">Bard</option>
+    </select>
+
+    <label for="alignment">Choose an alignment:</label>
+    <select id="alignment" name="alignment">
+      <option value="Lawful Good">Lawful Good</option>
+      <option value="Neutral Good">Neutral Good</option>
+      <option value="Chaotic Good">Chaotic Good</option>
+      <option value="Lawful Neutral">Lawful Neutral</option>
+      <option value="True Neutral">True Neutral</option>
+      <option value="Chaotic Neutral">Chaotic Neutral</option>
+      <option value="Lawful Evil">Lawful Evil</option>
+      <option value="Neutral Evil">Neutral Evil</option>
+      <option value="Chaotic Evil">Chaotic Evil</option>
+    </select>
+
+    <label for="background">Choose a background:</label>
+    <select id="background" name="background">
+      <option value="Noble">Noble</option>
+      <option value="Soldier">Soldier</option>
+      <option value="Outlander">Outlander</option>
+      <option value="Sage">Sage</option>
+      <option value="Criminal">Criminal</option>
+      <option value="Folk Hero">Folk Hero</option>
+      <option value="Hermit">Hermit</option>
+      <option value="Entertainer">Entertainer</option>
+      <option value="Acolyte">Acolyte</option>
+    </select>
+
+    <button type="submit">Generate Character</button>
+  </form>
+
+  <div id="character-display"></div>
+
+  <script>
+    document.getElementById('character-form').addEventListener('submit', async function(event) {
+      event.preventDefault();
+      const race = document.getElementById('race').value;
+      const charClass = document.getElementById('class').value;
+      const alignment = document.getElementById('alignment').value;
+      const background = document.getElementById('background').value;
+
+      const response = await fetch(`/generate-character?race=${race}&charClass=${charClass}&alignment=${alignment}&background=${background}`);
+      const character = await response.json();
+
+      const characterDisplay = document.getElementById('character-display');
+      characterDisplay.innerHTML = `
+        <h2>${character.name}</h2>
+        <p><strong>Race:</strong> ${character.race}</p>
+        <p><strong>Class:</strong> ${character.class}</p>
+        <p><strong>Alignment:</strong> ${character.alignment}</p>
+        <p><strong>Background:</strong> ${character.background}</p>
+        <p><strong>Description:</strong> ${character.description}</p>
+        <h3>Attributes</h3>
+        <ul>
+          <li><strong>Strength:</strong> ${character.attributes.strength}</li>
+          <li><strong>Dexterity:</strong> ${character.attributes.dexterity}</li>
+          <li><strong>Constitution:</strong> ${character.attributes.constitution}</li>
+          <li><strong>Intelligence:</strong> ${character.attributes.intelligence}</li>
+          <li><strong>Wisdom:</strong> ${character.attributes.wisdom}</li>
+          <li><strong>Charisma:</strong> ${character.attributes.charisma}</li>
+        </ul>
+        <h3>Skills</h3>
+        <ul>${character.skills.map(skill => `<li>${skill}</li>`).join('')}</ul>
+        <h3>Proficiencies</h3>
+        <ul>${character.proficiencies.map(prof => `<li>${prof}</li>`).join('')}</ul>
+      `;
+    });
+  </script>
+</body>
+</html>

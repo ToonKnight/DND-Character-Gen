@@ -45,14 +45,14 @@ async function fetchRandomPlace() {
   }
 }
 
-// Function to fetch a random name
-async function fetchRandomName() {
+// Function to fetch a random fantasy name
+async function fetchFantasyName() {
   try {
     const response = await axios.get('https://randomuser.me/api/');
     const user = response.data.results[0];
     return `${user.name.first} ${user.name.last}`;
   } catch (error) {
-    console.error('Error fetching random name:', error);
+    console.error('Error fetching fantasy name:', error);
     return 'Unknown Name';
   }
 }
@@ -94,20 +94,19 @@ async function generateCharacter(race, charClass, alignment, background) {
     YuanTi: { charisma: 2, intelligence: 1 }
   };
 
-  const skills = {
-    Fighter: ['Athletics', 'Intimidation'],
-    Wizard: ['Arcana', 'History'],
-    Rogue: ['Stealth', 'Acrobatics'],
-    Cleric: ['Religion', 'Medicine'],
-    Bard: ['Performance', 'Persuasion'],
-  };
-
-  const proficiencies = {
-    Fighter: ['All armor', 'Shields', 'Simple weapons', 'Martial weapons'],
-    Wizard: ['Daggers', 'Darts', 'Slings', 'Quarterstaffs', 'Light crossbows'],
-    Rogue: ['Light armor', 'Simple weapons', 'Hand crossbows', 'Longswords', 'Rapiers', 'Shortswords'],
-    Cleric: ['Light armor', 'Medium armor', 'Shields', 'Simple weapons'],
-    Bard: ['Light armor', 'Simple weapons', 'Hand crossbows', 'Longswords', 'Rapiers', 'Shortswords'],
+  const classes = {
+    Barbarian: { hitDice: '1d12', primaryAbility: 'Strength', savingThrows: ['Strength', 'Constitution'], skills: ['Animal Handling', 'Athletics', 'Intimidation', 'Nature', 'Perception', 'Survival'] },
+    Bard: { hitDice: '1d8', primaryAbility: 'Charisma', savingThrows: ['Dexterity', 'Charisma'], skills: ['Acrobatics', 'Animal Handling', 'Arcana', 'Athletics', 'Deception', 'History', 'Insight', 'Intimidation', 'Investigation', 'Medicine', 'Nature', 'Perception', 'Performance', 'Persuasion', 'Religion', 'Sleight of Hand', 'Stealth', 'Survival'] },
+    Cleric: { hitDice: '1d8', primaryAbility: 'Wisdom', savingThrows: ['Wisdom', 'Charisma'], skills: ['History', 'Insight', 'Medicine', 'Persuasion', 'Religion'] },
+    Druid: { hitDice: '1d8', primaryAbility: 'Wisdom', savingThrows: ['Intelligence', 'Wisdom'], skills: ['Arcana', 'Animal Handling', 'Insight', 'Medicine', 'Nature', 'Perception', 'Religion', 'Survival'] },
+    Fighter: { hitDice: '1d10', primaryAbility: 'Strength or Dexterity', savingThrows: ['Strength', 'Constitution'], skills: ['Acrobatics', 'Animal Handling', 'Athletics', 'History', 'Insight', 'Intimidation', 'Perception', 'Survival'] },
+    Monk: { hitDice: '1d8', primaryAbility: 'Dexterity & Wisdom', savingThrows: ['Strength', 'Dexterity'], skills: ['Acrobatics', 'Athletics', 'History', 'Insight', 'Religion', 'Stealth'] },
+    Paladin: { hitDice: '1d10', primaryAbility: 'Strength & Charisma', savingThrows: ['Wisdom', 'Charisma'], skills: ['Athletics', 'Insight', 'Intimidation', 'Medicine', 'Persuasion', 'Religion'] },
+    Ranger: { hitDice: '1d10', primaryAbility: 'Dexterity & Wisdom', savingThrows: ['Strength', 'Dexterity'], skills: ['Animal Handling', 'Athletics', 'Insight', 'Investigation', 'Nature', 'Perception', 'Stealth', 'Survival'] },
+    Rogue: { hitDice: '1d8', primaryAbility: 'Dexterity', savingThrows: ['Dexterity', 'Intelligence'], skills: ['Acrobatics', 'Athletics', 'Deception', 'Insight', 'Intimidation', 'Investigation', 'Perception', 'Performance', 'Persuasion', 'Sleight of Hand', 'Stealth'] },
+    Sorcerer: { hitDice: '1d6', primaryAbility: 'Charisma', savingThrows: ['Constitution', 'Charisma'], skills: ['Arcana', 'Deception', 'Insight', 'Intimidation', 'Persuasion', 'Religion'] },
+    Warlock: { hitDice: '1d8', primaryAbility: 'Charisma', savingThrows: ['Wisdom', 'Charisma'], skills: ['Arcana', 'Deception', 'History', 'Intimidation', 'Investigation', 'Nature', 'Religion'] },
+    Wizard: { hitDice: '1d6', primaryAbility: 'Intelligence', savingThrows: ['Intelligence', 'Wisdom'], skills: ['Arcana', 'History', 'Insight', 'Investigation', 'Medicine', 'Religion'] }
   };
 
   // Generate base attributes
@@ -123,10 +122,12 @@ async function generateCharacter(race, charClass, alignment, background) {
   // Apply racial modifiers
   const raceModifiers = races[race];
   for (let key in attributes) {
-    attributes[key] += raceModifiers[key];
+    if (raceModifiers[key]) {
+      attributes[key] += raceModifiers[key];
+    }
   }
 
-  const charName = await fetchRandomName();
+  const charName = await fetchFantasyName();
   const description = await generateFantasyDescription(charName, race, charClass);
 
   const character = {
@@ -137,8 +138,10 @@ async function generateCharacter(race, charClass, alignment, background) {
     background: background,
     description: description,
     attributes: attributes,
-    skills: skills[charClass],
-    proficiencies: proficiencies[charClass],
+    hitDice: classes[charClass].hitDice,
+    primaryAbility: classes[charClass].primaryAbility,
+    savingThrows: classes[charClass].savingThrows,
+    skills: classes[charClass].skills
   };
 
   return character;

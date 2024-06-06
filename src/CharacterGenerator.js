@@ -101,7 +101,129 @@ class CharacterGenerator {
             }
             // Additional classes can be added here
         };
-    }   
+
+        this.items = {
+            Longsword: {
+                type: 'weapon',
+                usableBy: {
+                    races: ['Human', 'Elf', 'HalfElf', 'HalfOrc'],
+                    classes: ['Fighter', 'Paladin', 'Ranger', 'Barbarian']
+                }
+            },
+            Staff: {
+                type: 'weapon',
+                usableBy: {
+                    races: ['Human', 'Elf', 'Gnome', 'Tiefling'],
+                    classes: ['Wizard', 'Cleric', 'Druid', 'Warlock', 'Sorcerer']
+                }
+            },
+            Shortbow: {
+                type: 'weapon',
+                usableBy: {
+                    races: ['Elf', 'Halfling', 'Human'],
+                    classes: ['Ranger', 'Rogue']
+                }
+            },
+            Shield: {
+                type: 'armor',
+                usableBy: {
+                    races: ['Human', 'Dwarf', 'HalfElf', 'Dragonborn'],
+                    classes: ['Fighter', 'Paladin', 'Cleric']
+                }
+            },
+            LeatherArmor: {
+                type: 'armor',
+                usableBy: {
+                    races: ['Human', 'Elf', 'Halfling', 'Dwarf'],
+                    classes: ['Rogue', 'Ranger', 'Bard']
+                }
+            },
+            ChainMail: {
+                type: 'armor',
+                usableBy: {
+                    races: ['Human', 'Dwarf', 'HalfOrc'],
+                    classes: ['Fighter', 'Paladin']
+                }
+            },
+            HealingPotion: {
+                type: 'consumable',
+                usableBy: {
+                    races: ['Human', 'Elf', 'Dwarf', 'Halfling', 'Gnome', 'Tiefling', 'HalfElf', 'HalfOrc'],
+                    classes: ['Fighter', 'Wizard', 'Rogue', 'Cleric', 'Bard', 'Paladin', 'Ranger', 'Druid', 'Monk', 'Sorcerer', 'Warlock', 'Barbarian']
+                }
+            },
+            Battleaxe: {
+                type: 'weapon',
+                usableBy: {
+                    races: ['Dwarf', 'Human', 'HalfOrc'],
+                    classes: ['Fighter', 'Barbarian']
+                }
+            },
+            Dagger: {
+                type: 'weapon',
+                usableBy: {
+                    races: ['Human', 'Elf', 'Halfling', 'Gnome'],
+                    classes: ['Rogue', 'Wizard', 'Sorcerer', 'Warlock', 'Bard']
+                }
+            },
+            Mace: {
+                type: 'weapon',
+                usableBy: {
+                    races: ['Human', 'Dwarf', 'HalfElf'],
+                    classes: ['Cleric', 'Paladin']
+                }
+            },
+            LightCrossbow: {
+                type: 'weapon',
+                usableBy: {
+                    races: ['Human', 'Elf', 'Halfling'],
+                    classes: ['Rogue', 'Wizard', 'Bard']
+                }
+            },
+            Greatsword: {
+                type: 'weapon',
+                usableBy: {
+                    races: ['Human', 'HalfOrc', 'Dragonborn'],
+                    classes: ['Fighter', 'Barbarian', 'Paladin']
+                }
+            },
+            Spear: {
+                type: 'weapon',
+                usableBy: {
+                    races: ['Human', 'Elf', 'HalfElf', 'Dwarf'],
+                    classes: ['Druid', 'Ranger', 'Fighter']
+                }
+            },
+            StuddedLeather: {
+                type: 'armor',
+                usableBy: {
+                    races: ['Human', 'Elf', 'Halfling'],
+                    classes: ['Rogue', 'Bard']
+                }
+            },
+            PlateArmor: {
+                type: 'armor',
+                usableBy: {
+                    races: ['Human', 'Dwarf', 'Dragonborn'],
+                    classes: ['Fighter', 'Paladin']
+                }
+            },
+            ScrollOfFireball: {
+                type: 'magic item',
+                usableBy: {
+                    races: ['Human', 'Elf', 'Tiefling', 'Gnome'],
+                    classes: ['Wizard', 'Sorcerer', 'Warlock']
+                }
+            },
+            CloakOfInvisibility: {
+                type: 'magic item',
+                usableBy: {
+                    races: ['Human', 'Elf', 'Halfling'],
+                    classes: ['Rogue', 'Wizard', 'Bard']
+                }
+            }
+        };
+    }
 
     getRandomInt(min, max) {
         return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -154,6 +276,27 @@ class CharacterGenerator {
         return `${name} ${title}, a ${race} ${charClass} from ${place}`;
     }
 
+    assignItems(race, charClass) {
+        const assignedItems = [];
+        const usedItemTypes = new Set();
+
+        const filteredItems = Object.entries(this.items).filter(([item, details]) => {
+            return details.usableBy.races.includes(race) && details.usableBy.classes.includes(charClass);
+        });
+
+        while (filteredItems.length > 0 && usedItemTypes.size < 3) { // Let's limit to 3 items for variety
+            const randomIndex = this.getRandomInt(0, filteredItems.length - 1);
+            const [item, details] = filteredItems.splice(randomIndex, 1)[0];
+
+            if (!usedItemTypes.has(details.type)) {
+                assignedItems.push(item);
+                usedItemTypes.add(details.type);
+            }
+        }
+
+        return assignedItems;
+    }
+
     async generateCharacter(race, charClass, alignment, background) {
         let attributes = {
             strength: this.generateAttribute(),
@@ -168,7 +311,6 @@ class CharacterGenerator {
         const raceModifiers = this.races[race];
         Object.keys(raceModifiers).forEach(attr => {
             if (attr === 'two_other_scores' && race === 'HalfElf') {
-                // Example: Randomly choose two other attributes to increment
                 const possibleAttributes = ['strength', 'dexterity', 'constitution', 'intelligence', 'wisdom'].filter(a => a !== 'charisma');
                 const selectedAttributes = [];
                 while (selectedAttributes.length < 2) {
@@ -177,8 +319,7 @@ class CharacterGenerator {
                 }
                 selectedAttributes.forEach(a => attributes[a] += 1);
             } else if (typeof raceModifiers[attr] === 'object') {
-                // Handle sub-race modifiers, e.g., for Genasi
-                const subRace = raceModifiers.sub_race[background];  // Assuming `background` key holds sub-race type
+                const subRace = raceModifiers.sub_race[background];
                 if (subRace) {
                     Object.keys(subRace).forEach(subAttr => attributes[subAttr] += subRace[subAttr]);
                 }
@@ -189,6 +330,7 @@ class CharacterGenerator {
 
         const charName = await this.fetchRandomName();
         const description = await this.generateFantasyDescription(charName, race, charClass);
+        const items = this.assignItems(race, charClass);
 
         return {
             name: charName,
@@ -197,7 +339,8 @@ class CharacterGenerator {
             alignment,
             background,
             description,
-            attributes
+            attributes,
+            items
         };
     }
 }

@@ -39,7 +39,7 @@
 
         <label for="class">Choose a class:</label>
         <select id="class" name="class">
-          <option value="Fighter">Fighter</option>
+            <option value="Fighter">Fighter</option>
             <option value="Wizard">Wizard</option>
             <option value="Rogue">Rogue</option>
             <option value="Cleric">Cleric</option>
@@ -114,6 +114,10 @@
                         <li><strong>Intelligence:</strong> ${character.attributes.intelligence}</li>
                         <li><strong>Wisdom:</strong> ${character.attributes.wisdom}</li>
                         <li><strong>Charisma:</strong> ${character.attributes.charisma}</li>
+                    </ul>
+                    <h3>Items</h3>
+                    <ul>
+                        ${character.items.map(item => `<li>${item}</li>`).join('')}
                     </ul>
                 `;
             } else {

@@ -79,6 +79,13 @@
             <option value="Acolyte">Acolyte</option>
         </select>
 
+        <label for="gender">Choose a gender:</label>
+        <select id="gender" name="gender">
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+            <option value="Other">Other</option>
+        </select>
+
         <button type="submit">Generate Character</button>
     </form>
 
@@ -91,9 +98,10 @@
             const charClass = document.getElementById('class').value;
             const alignment = document.getElementById('alignment').value;
             const background = document.getElementById('background').value;
+            const gender = document.getElementById('gender').value;
 
             // Fetch character data from the server
-            const response = await fetch(`/generate-character?race=${race}&charClass=${charClass}&alignment=${alignment}&background=${background}`);
+            const response = await fetch(`/generate-character?race=${race}&charClass=${charClass}&alignment=${alignment}&background=${background}&gender=${gender}`);
             if (response.ok) {
                 const character = await response.json();
 
@@ -101,6 +109,7 @@
                 const characterDisplay = document.getElementById('character-display');
                 characterDisplay.innerHTML = `
                     <h2>${character.name}</h2>
+                    <p><strong>Gender:</strong> ${character.gender}</p>
                     <p><strong>Race:</strong> ${character.race}</p>
                     <p><strong>Class:</strong> ${character.class}</p>
                     <p><strong>Alignment:</strong> ${character.alignment}</p>
@@ -108,12 +117,12 @@
                     <p><strong>Description:</strong> ${character.description}</p>
                     <h3>Attributes</h3>
                     <ul>
-                        <li><strong>Strength:</strong> ${character.attributes.strength}</li>
-                        <li><strong>Dexterity:</strong> ${character.attributes.dexterity}</li>
-                        <li><strong>Constitution:</strong> ${character.attributes.constitution}</li>
-                        <li><strong>Intelligence:</strong> ${character.attributes.intelligence}</li>
-                        <li><strong>Wisdom:</strong> ${character.attributes.wisdom}</li>
-                        <li><strong>Charisma:</strong> ${character.attributes.charisma}</li>
+                        <li><strong>Strength:</strong> ${character.attributes.strength.attributeScore} (${character.attributes.strength.rolls.join(', ')})</li>
+                        <li><strong>Dexterity:</strong> ${character.attributes.dexterity.attributeScore} (${character.attributes.dexterity.rolls.join(', ')})</li>
+                        <li><strong>Constitution:</strong> ${character.attributes.constitution.attributeScore} (${character.attributes.constitution.rolls.join(', ')})</li>
+                        <li><strong>Intelligence:</strong> ${character.attributes.intelligence.attributeScore} (${character.attributes.intelligence.rolls.join(', ')})</li>
+                        <li><strong>Wisdom:</strong> ${character.attributes.wisdom.attributeScore} (${character.attributes.wisdom.rolls.join(', ')})</li>
+                        <li><strong>Charisma:</strong> ${character.attributes.charisma.attributeScore} (${character.attributes.charisma.rolls.join(', ')})</li>
                     </ul>
                     <h3>Items</h3>
                     <ul>

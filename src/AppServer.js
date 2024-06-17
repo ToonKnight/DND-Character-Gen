@@ -26,9 +26,9 @@ export default class AppServer {
         });
 
         this.app.get('/generate-character', async (req, res) => {
-            const { race, charClass, alignment, background } = req.query;
+            const { race, charClass, alignment, background, gender } = req.query;
             const generator = new CharacterGenerator();
-            const character = await generator.generateCharacter(race, charClass, alignment, background);
+            const character = await generator.generateCharacter(race, charClass, alignment, background, gender);
             res.json(character);
         });
     }

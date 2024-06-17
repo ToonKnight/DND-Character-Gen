@@ -1,3 +1,4 @@
+// CharacterGenerator.js
 import axios from 'axios';
 
 class CharacterGenerator {
@@ -10,7 +11,7 @@ class CharacterGenerator {
             Orc: { strength: 2, constitution: 1, intelligence: -2 },
             Dragonborn: { strength: 2, charisma: 1 },
             Gnome: { intelligence: 2 },
-            HalfElf: { charisma: 2, two_other_scores: 1 },  // Special handling needed
+            HalfElf: { charisma: 2, two_other_scores: 1 },
             HalfOrc: { strength: 2, constitution: 1 },
             Tiefling: { charisma: 2, intelligence: 1 },
             Aarakocra: { dexterity: 2, wisdom: 1 },
@@ -38,7 +39,6 @@ class CharacterGenerator {
         };
 
         this.classes = {
-
             Fighter: {
                 skills: ['Athletics', 'Perception'],
                 proficiencies: ['All armor', 'Shields', 'Simple weapons', 'Martial weapons'],
@@ -99,129 +99,6 @@ class CharacterGenerator {
                 proficiencies: ['Light armor', 'Medium armor', 'Shields', 'Simple weapons', 'Martial weapons'],
                 hitDice: '1d12'
             }
-            // Additional classes can be added here
-        };
-
-        this.items = {
-            Longsword: {
-                type: 'weapon',
-                usableBy: {
-                    races: ['Human', 'Elf', 'HalfElf', 'HalfOrc'],
-                    classes: ['Fighter', 'Paladin', 'Ranger', 'Barbarian']
-                }
-            },
-            Staff: {
-                type: 'weapon',
-                usableBy: {
-                    races: ['Human', 'Elf', 'Gnome', 'Tiefling'],
-                    classes: ['Wizard', 'Cleric', 'Druid', 'Warlock', 'Sorcerer']
-                }
-            },
-            Shortbow: {
-                type: 'weapon',
-                usableBy: {
-                    races: ['Elf', 'Halfling', 'Human'],
-                    classes: ['Ranger', 'Rogue']
-                }
-            },
-            Shield: {
-                type: 'armor',
-                usableBy: {
-                    races: ['Human', 'Dwarf', 'HalfElf', 'Dragonborn'],
-                    classes: ['Fighter', 'Paladin', 'Cleric']
-                }
-            },
-            LeatherArmor: {
-                type: 'armor',
-                usableBy: {
-                    races: ['Human', 'Elf', 'Halfling', 'Dwarf'],
-                    classes: ['Rogue', 'Ranger', 'Bard']
-                }
-            },
-            ChainMail: {
-                type: 'armor',
-                usableBy: {
-                    races: ['Human', 'Dwarf', 'HalfOrc'],
-                    classes: ['Fighter', 'Paladin']
-                }
-            },
-            HealingPotion: {
-                type: 'consumable',
-                usableBy: {
-                    races: ['Human', 'Elf', 'Dwarf', 'Halfling', 'Gnome', 'Tiefling', 'HalfElf', 'HalfOrc'],
-                    classes: ['Fighter', 'Wizard', 'Rogue', 'Cleric', 'Bard', 'Paladin', 'Ranger', 'Druid', 'Monk', 'Sorcerer', 'Warlock', 'Barbarian']
-                }
-            },
-            Battleaxe: {
-                type: 'weapon',
-                usableBy: {
-                    races: ['Dwarf', 'Human', 'HalfOrc'],
-                    classes: ['Fighter', 'Barbarian']
-                }
-            },
-            Dagger: {
-                type: 'weapon',
-                usableBy: {
-                    races: ['Human', 'Elf', 'Halfling', 'Gnome'],
-                    classes: ['Rogue', 'Wizard', 'Sorcerer', 'Warlock', 'Bard']
-                }
-            },
-            Mace: {
-                type: 'weapon',
-                usableBy: {
-                    races: ['Human', 'Dwarf', 'HalfElf'],
-                    classes: ['Cleric', 'Paladin']
-                }
-            },
-            LightCrossbow: {
-                type: 'weapon',
-                usableBy: {
-                    races: ['Human', 'Elf', 'Halfling'],
-                    classes: ['Rogue', 'Wizard', 'Bard']
-                }
-            },
-            Greatsword: {
-                type: 'weapon',
-                usableBy: {
-                    races: ['Human', 'HalfOrc', 'Dragonborn'],
-                    classes: ['Fighter', 'Barbarian', 'Paladin']
-                }
-            },
-            Spear: {
-                type: 'weapon',
-                usableBy: {
-                    races: ['Human', 'Elf', 'HalfElf', 'Dwarf'],
-                    classes: ['Druid', 'Ranger', 'Fighter']
-                }
-            },
-            StuddedLeather: {
-                type: 'armor',
-                usableBy: {
-                    races: ['Human', 'Elf', 'Halfling'],
-                    classes: ['Rogue', 'Bard']
-                }
-            },
-            PlateArmor: {
-                type: 'armor',
-                usableBy: {
-                    races: ['Human', 'Dwarf', 'Dragonborn'],
-                    classes: ['Fighter', 'Paladin']
-                }
-            },
-            ScrollOfFireball: {
-                type: 'magic item',
-                usableBy: {
-                    races: ['Human', 'Elf', 'Tiefling', 'Gnome'],
-                    classes: ['Wizard', 'Sorcerer', 'Warlock']
-                }
-            },
-            CloakOfInvisibility: {
-                type: 'magic item',
-                usableBy: {
-                    races: ['Human', 'Elf', 'Halfling'],
-                    classes: ['Rogue', 'Wizard', 'Bard']
-                }
-            }
         };
     }
 
@@ -236,12 +113,15 @@ class CharacterGenerator {
         }
         rolls.sort((a, b) => b - a);
         rolls.pop();
-        return rolls.reduce((a, b) => a + b, 0);
+        return {
+            attributeScore: rolls.reduce((a, b) => a + b, 0),
+            rolls: rolls
+        };
     }
 
-    async fetchRandomName() {
+    async fetchRandomName(gender) {
         try {
-            const response = await axios.get('https://randomuser.me/api/');
+            const response = await axios.get(`https://randomuser.me/api/?gender=${gender}`);
             const user = response.data.results[0];
             return `${user.name.first} ${user.name.last}`;
         } catch (error) {
@@ -276,28 +156,33 @@ class CharacterGenerator {
         return `${name} ${title}, a ${race} ${charClass} from ${place}`;
     }
 
-    assignItems(race, charClass) {
-        const assignedItems = [];
-        const usedItemTypes = new Set();
+    generateItems(charClass) {
+        const itemsForClass = {
+            Fighter: ['Sword', 'Shield', 'Warhammer', 'Battle Axe'],
+            Wizard: ['Staff', 'Wand', 'Spellbook', 'Robe'],
+            Rogue: ['Dagger', 'Thieves\' Tools', 'Shortbow', 'Cloak'],
+            Cleric: ['Mace', 'Holy Symbol', 'Shield', 'Healing Potion'],
+            Bard: ['Lute', 'Dagger', 'Flute', 'Rapier'],
+            Paladin: ['Longsword', 'Shield', 'Holy Symbol', 'Javelin'],
+            Ranger: ['Longbow', 'Shortsword', 'Dagger', 'Leather Armor'],
+            Druid: ['Scimitar', 'Quarterstaff', 'Herbalism Kit', 'Druidic Focus'],
+            Monk: ['Shortsword', 'Quarterstaff', 'Dart', 'Robe'],
+            Sorcerer: ['Wand', 'Spellbook', 'Dagger', 'Robe'],
+            Warlock: ['Tome', 'Wand', 'Dagger', 'Mystic Amulet'],
+            Barbarian: ['Greataxe', 'Handaxe', 'Javelin', 'War Drum']
+        };
 
-        const filteredItems = Object.entries(this.items).filter(([item, details]) => {
-            return details.usableBy.races.includes(race) && details.usableBy.classes.includes(charClass);
-        });
+        const items = itemsForClass[charClass];
+        const randomItem1 = items[this.getRandomInt(0, items.length - 1)];
+        let randomItem2;
+        do {
+            randomItem2 = items[this.getRandomInt(0, items.length - 1)];
+        } while (randomItem2 === randomItem1);
 
-        while (filteredItems.length > 0 && usedItemTypes.size < 3) { // Let's limit to 3 items for variety
-            const randomIndex = this.getRandomInt(0, filteredItems.length - 1);
-            const [item, details] = filteredItems.splice(randomIndex, 1)[0];
-
-            if (!usedItemTypes.has(details.type)) {
-                assignedItems.push(item);
-                usedItemTypes.add(details.type);
-            }
-        }
-
-        return assignedItems;
+        return [randomItem1, randomItem2];
     }
 
-    async generateCharacter(race, charClass, alignment, background) {
+    async generateCharacter(race, charClass, alignment, background, gender) {
         let attributes = {
             strength: this.generateAttribute(),
             dexterity: this.generateAttribute(),
@@ -307,7 +192,6 @@ class CharacterGenerator {
             charisma: this.generateAttribute()
         };
 
-        // Apply race modifiers to attributes
         const raceModifiers = this.races[race];
         Object.keys(raceModifiers).forEach(attr => {
             if (attr === 'two_other_scores' && race === 'HalfElf') {
@@ -317,23 +201,24 @@ class CharacterGenerator {
                     const attrToIncrement = possibleAttributes.splice(this.getRandomInt(0, possibleAttributes.length - 1), 1)[0];
                     selectedAttributes.push(attrToIncrement);
                 }
-                selectedAttributes.forEach(a => attributes[a] += 1);
+                selectedAttributes.forEach(a => attributes[a].attributeScore += 1);
             } else if (typeof raceModifiers[attr] === 'object') {
                 const subRace = raceModifiers.sub_race[background];
                 if (subRace) {
-                    Object.keys(subRace).forEach(subAttr => attributes[subAttr] += subRace[subAttr]);
+                    Object.keys(subRace).forEach(subAttr => attributes[subAttr].attributeScore += subRace[subAttr]);
                 }
             } else {
-                attributes[attr] = (attributes[attr] || 0) + raceModifiers[attr];
+                attributes[attr].attributeScore += raceModifiers[attr];
             }
         });
 
-        const charName = await this.fetchRandomName();
+        const charName = await this.fetchRandomName(gender);
         const description = await this.generateFantasyDescription(charName, race, charClass);
-        const items = this.assignItems(race, charClass);
+        const items = this.generateItems(charClass);
 
         return {
             name: charName,
+            gender,
             race,
             class: charClass,
             alignment,

@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dungeon Map Generator</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #2b2b2b;
+            color: #e0e0e0;
+            text-align: center;
+        }
+        .container {
+            max-width: 800px;
+            margin: auto;
+            padding: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        .form-group select, .form-group input {
+            width: 100%;
+            padding: 8px;
+            margin: 5px 0 10px 0;
+            display: inline-block;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        .map {
+            display: grid;
+            gap: 1px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        .tile {
+            width: 20px;
+            height: 20px;
+            position: relative;
+        }
+        .tile.floor {
+            background-color: white;
+        }
+        .tile.wall {
+            background-color: black;
+        }
+        .tile.door {
+            background-color: brown;
+        }
+        .tile.corridor {
+            background-color: gray;
+        }
+        .room-number {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 12px;
+            color: red;
+        }
+        .room-content {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 10px;
+            color: blue;
+        }
+        .preview {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #1b1b1b;
+            border-radius: 8px;
+        }
+        .description {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #1b1b1b;
+            border-radius: 8px;
+            text-align: left;
+            color: #e0e0e0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Dungeon Map Generator</h1>
+        <form id="map-form">
+            <div class="form-group">
+                <label for="dungeon-name">Dungeon Name:</label>
+                <input type="text" id="dungeon-name" name="dungeon-name" placeholder="Enter dungeon name">
+            </div>
+            <div class="form-group">
+                <label for="dungeon-size">Dungeon Size:</label>
+                <select id="dungeon-size" name="dungeon-size">
+                    <option value="small">Small</option>
+                    <option value="medium">Medium</option>
+                    <option value="large">Large</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="room-layout">Room Layout:</label>
+                <select id="room-layout" name="room-layout">
+                    <option value="scattered">Scattered</option>
+                    <option value="clustered">Clustered</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="room-size">Room Size:</label>
+                <select id="room-size" name="room-size">
+                    <option value="small">Small</option>
+                    <option value="medium">Medium</option>
+                    <option value="large">Large</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="corridors">Corridors:</label>
+                <select id="corridors" name="corridors">
+                    <option value="straight">Straight</option>
+                    <option value="errant">Errant</option>
+                </select>
+            </div>
+            <button type="submit">Generate Dungeon</button>
+        </form>
+        <div id="map-display" class="map preview"></div>
+        <div id="dungeon-description" class="description"></div>
+    </div>
+
+    <script>
+        document.getElementById('map-form').addEventListener('submit', async function(event) {
+            event.preventDefault();
+            const dungeonName = document.getElementById('dungeon-name').value;
+            const dungeonSize = document.getElementById('dungeon-size').value;
+            const roomLayout = document.getElementById('room-layout').value;
+            const roomSize = document.getElementById('room-size').value;
+            const corridors = document.getElementById('corridors').value;
+
+            const response = await fetch(`/generate-map?dungeonName=${dungeonName}&dungeonSize=${dungeonSize}&roomLayout=${roomLayout}&roomSize=${roomSize}&corridors=${corridors}`);
+            if (response.ok) {
+                const mapData = await response.json();
+                const map = mapData.map;
+                const rooms = mapData.rooms;
+                const mapDisplay = document.getElementById('map-display');
+                mapDisplay.style.gridTemplateColumns = `repeat(${map[0].length}, 20px)`;
+                mapDisplay.innerHTML = map.map((row, y) => 
+                    row.map((cell, x) => {
+                        let roomNumber = '';
+                        let roomContent = '';
+                        const room = rooms.find(r => r.x <= x && x < r.x + r.width && r.y <= y && y < r.y + r.height);
+                        if (room && x === Math.floor(room.x + room.width / 2) && y === Math.floor(room.y + room.height / 2)) {
+                            roomNumber = `<div class="room-number">${room.number}</div>`;
+                            roomContent = `<div class="room-content">${getSymbol(room.content)}</div>`;
+                        }
+                        return `<div class="tile ${cell === 1 ? 'floor' : cell === 2 ? 'door' : cell === 3 ? 'corridor' : 'wall'}">${roomNumber}${roomContent}</div>`;
+                    }).join('')
+                ).join('');
+
+                const dungeonDescription = document.getElementById('dungeon-description');
+                dungeonDescription.innerHTML = `
+                    <h2>${dungeonName}</h2>
+                    <p>Size: ${dungeonSize}</p>
+                    <p>Room Layout: ${roomLayout}</p>
+                    <p>Room Size: ${roomSize}</p>
+                    <p>Corridors: ${corridors}</p>
+                    <h3>Rooms:</h3>
+                    <ul>
+                        ${rooms.map(room => `<li>Room ${room.number}: ${room.description}</li>`).join('')}
+                    </ul>
+                `;
+            } else {
+                console.error('Failed to fetch map data.');
+                document.getElementById('map-display').innerHTML = '<p>Error loading map information.</p>';
+            }
+        });
+
+        function getSymbol(content) {
+            switch (content) {
+                case 'empty':
+                    return '';
+                case 'furniture':
+                    return '🪑';
+                case 'treasure':
+                    return '💰';
+                case 'trap':
+                    return '⚠️';
+                case 'enemy':
+                    return '👹';
+                default:
+                    return '';
+            }
+        }
+    </script>
+</body>
+</html>

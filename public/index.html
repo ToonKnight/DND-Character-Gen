@@ -3,137 +3,45 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>D&D Character Generator</title>
+    <title>D&D Tools</title>
     <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #2b2b2b;
+            color: #e0e0e0;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            height: 100vh;
+        }
+        .container {
+            max-width: 600px;
+            margin: auto;
+            padding: 20px;
+        }
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            margin: 10px 0;
+            background-color: #4CAF50;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        .btn:hover {
+            background-color: #45a049;
+        }
+    </style>
 </head>
 <body>
-    <h1>D&D Character Generator</h1>
-    <form id="character-form">
-        <label for="race">Choose a race:</label>
-        <select id="race" name="race">
-            <option value="Human">Human</option>
-            <option value="Elf">Elf</option>
-            <option value="Dwarf">Dwarf</option>
-            <option value="Halfling">Halfling</option>
-            <option value="Orc">Orc</option>
-            <option value="Dragonborn">Dragonborn</option>
-            <option value="Gnome">Gnome</option>
-            <option value="HalfElf">Half-Elf</option>
-            <option value="HalfOrc">Half-Orc</option>
-            <option value="Tiefling">Tiefling</option>
-            <option value="Aarakocra">Aarakocra</option>
-            <option value="Genasi">Genasi</option>
-            <option value="Goliath">Goliath</option>
-            <option value="Aasimar">Aasimar</option>
-            <option value="Bugbear">Bugbear</option>
-            <option value="Firbolg">Firbolg</option>
-            <option value="Goblin">Goblin</option>
-            <option value="Hobgoblin">Hobgoblin</option>
-            <option value="Kenku">Kenku</option>
-            <option value="Kobold">Kobold</option>
-            <option value="Lizardfolk">Lizardfolk</option>
-            <option value="Tabaxi">Tabaxi</option>
-            <option value="Triton">Triton</option>
-            <option value="YuanTi">Yuan-ti Pureblood</option>
-        </select>
-
-        <label for="class">Choose a class:</label>
-        <select id="class" name="class">
-            <option value="Fighter">Fighter</option>
-            <option value="Wizard">Wizard</option>
-            <option value="Rogue">Rogue</option>
-            <option value="Cleric">Cleric</option>
-            <option value="Bard">Bard</option>
-            <option value="Paladin">Paladin</option>
-            <option value="Ranger">Ranger</option>
-            <option value="Druid">Druid</option>
-            <option value="Monk">Monk</option>
-            <option value="Sorcerer">Sorcerer</option>
-            <option value="Warlock">Warlock</option>
-            <option value="Barbarian">Barbarian</option>
-        </select>
-
-        <label for="alignment">Choose an alignment:</label>
-        <select id="alignment" name="alignment">
-            <option value="Lawful Good">Lawful Good</option>
-            <option value="Neutral Good">Neutral Good</option>
-            <option value="Chaotic Good">Chaotic Good</option>
-            <option value="Lawful Neutral">Lawful Neutral</option>
-            <option value="True Neutral">True Neutral</option>
-            <option value="Chaotic Neutral">Chaotic Neutral</option>
-            <option value="Lawful Evil">Lawful Evil</option>
-            <option value="Neutral Evil">Neutral Evil</option>
-            <option value="Chaotic Evil">Chaotic Evil</option>
-        </select>
-
-        <label for="background">Choose a background:</label>
-        <select id="background" name="background">
-            <option value="Noble">Noble</option>
-            <option value="Soldier">Soldier</option>
-            <option value="Outlander">Outlander</option>
-            <option value="Sage">Sage</option>
-            <option value="Criminal">Criminal</option>
-            <option value="Folk Hero">Folk Hero</option>
-            <option value="Hermit">Hermit</option>
-            <option value="Entertainer">Entertainer</option>
-            <option value="Acolyte">Acolyte</option>
-        </select>
-
-        <label for="gender">Choose a gender:</label>
-        <select id="gender" name="gender">
-            <option value="Male">Male</option>
-            <option value="Female">Female</option>
-            <option value="Other">Other</option>
-        </select>
-
-        <button type="submit">Generate Character</button>
-    </form>
-
-    <div id="character-display"></div>
-
-    <script>
-        document.getElementById('character-form').addEventListener('submit', async function(event) {
-            event.preventDefault(); // Prevent the default form submission behavior
-            const race = document.getElementById('race').value;
-            const charClass = document.getElementById('class').value;
-            const alignment = document.getElementById('alignment').value;
-            const background = document.getElementById('background').value;
-            const gender = document.getElementById('gender').value;
-
-            // Fetch character data from the server
-            const response = await fetch(`/generate-character?race=${race}&charClass=${charClass}&alignment=${alignment}&background=${background}&gender=${gender}`);
-            if (response.ok) {
-                const character = await response.json();
-
-                // Display the character information
-                const characterDisplay = document.getElementById('character-display');
-                characterDisplay.innerHTML = `
-                    <h2>${character.name}</h2>
-                    <p><strong>Gender:</strong> ${character.gender}</p>
-                    <p><strong>Race:</strong> ${character.race}</p>
-                    <p><strong>Class:</strong> ${character.class}</p>
-                    <p><strong>Alignment:</strong> ${character.alignment}</p>
-                    <p><strong>Background:</strong> ${character.background}</p>
-                    <p><strong>Description:</strong> ${character.description}</p>
-                    <h3>Attributes</h3>
-                    <ul>
-                        <li><strong>Strength:</strong> ${character.attributes.strength.attributeScore} (${character.attributes.strength.rolls.join(', ')})</li>
-                        <li><strong>Dexterity:</strong> ${character.attributes.dexterity.attributeScore} (${character.attributes.dexterity.rolls.join(', ')})</li>
-                        <li><strong>Constitution:</strong> ${character.attributes.constitution.attributeScore} (${character.attributes.constitution.rolls.join(', ')})</li>
-                        <li><strong>Intelligence:</strong> ${character.attributes.intelligence.attributeScore} (${character.attributes.intelligence.rolls.join(', ')})</li>
-                        <li><strong>Wisdom:</strong> ${character.attributes.wisdom.attributeScore} (${character.attributes.wisdom.rolls.join(', ')})</li>
-                        <li><strong>Charisma:</strong> ${character.attributes.charisma.attributeScore} (${character.attributes.charisma.rolls.join(', ')})</li>
-                    </ul>
-                    <h3>Items</h3>
-                    <ul>
-                        ${character.items.map(item => `<li>${item}</li>`).join('')}
-                    </ul>
-                `;
-            } else {
-                console.error('Failed to fetch character data.');
-                document.getElementById('character-display').innerHTML = '<p>Error loading character information.</p>';
-            }
-        });
-    </script>
+    <div class="container">
+        <h1>Welcome to D&D Tools</h1>
+        <a href="character.html" class="btn">Character Generator</a>
+        <a href="dungeon.html" class="btn">Dungeon Map Generator</a>
+    </div>
 </body>
 </html>
